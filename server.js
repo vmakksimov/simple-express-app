@@ -1,8 +1,11 @@
 const express = require('express');
+const path = require('path');
 const friendsRouter = require('./routes/friends.router')
 const messagesRouter = require('./routes/messages.router')
 
 const app = express();
+app.set('view engine', 'hbs')
+app.set('views', path.join(__dirname, 'views'))
 const PORT = 3000;
 
 app.use((req, res, next) => {
@@ -10,9 +13,17 @@ app.use((req, res, next) => {
     next();
     const delta = Date.now() - start
     console.log(`${req.method} ${req.baseUrl }${req.url} ${delta}ms`)
-})
+});
 
+
+app.use('/site', express.static(path.join(__dirname, 'public')))
 app.use(express.json())
+app.get('/', (req, res) => {
+    res.render('index.hbs', {
+        title: 'Nala the Rottie',
+        caption: 'What a beatiful Rottie!!'
+    })
+})
 app.use('/friends', friendsRouter)
 app.use('/messages', messagesRouter)
 app.listen(PORT, () => {
